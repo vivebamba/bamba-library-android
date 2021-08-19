@@ -34,7 +34,7 @@ class ChatActivity : AppCompatActivity() {
         messageAdapter = MessageAdapter(this)
         advisorUser = Bamba.getUser()
         messageList.adapter = messageAdapter
-
+        setupPusher()
 
         btnSend.setOnClickListener {
             if (!this.hasInternetConnection()) {
@@ -45,7 +45,6 @@ class ChatActivity : AppCompatActivity() {
                 } else {
                     this.showToast(getString(R.string.no_message))
                 }
-                setupPusher()
             }
         }
     }
