@@ -3,4 +3,6 @@
     <string name="input_message_placeholder">Escribe un mensaje</string>
     <string name="send_button_text">Enviar</string>
     <string name="show_bamba_advisor">Asesor Bamba</string>
+    <string name="no_internet">No es posible enviar el mensaje, revisa tu conexión</string>
+    <string name="no_message">No haz tecleado un mensaje</string>
 </resources>

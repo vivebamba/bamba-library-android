@@ -1,16 +1,17 @@
 package com.vivebamba.bambalibrary
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
-import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pusher.client.connection.ConnectionState
+import com.vivebamba.bambalibrary.util.Factory
 import com.vivebamba.client.models.AdvisorUser
 import com.vivebamba.client.models.Message
-import com.vivebamba.bambalibrary.util.Factory
 import kotlinx.android.synthetic.main.activity_chat.*
 import org.json.JSONObject
 import java.util.*
@@ -19,6 +20,7 @@ import com.vivebamba.bambalibrary.Message as LocalMessage
 class ChatActivity : AppCompatActivity() {
     private lateinit var messageAdapter: MessageAdapter
     private lateinit var advisorUser: AdvisorUser
+    private lateinit var bambaService: BambaService
     private var factory: Factory = Factory()
     private var pusher = factory.newPusher()
 
@@ -26,7 +28,7 @@ class ChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        val bambaService = factory.newBambaService()
+        bambaService = factory.newBambaService()
 
         messageList.layoutManager = LinearLayoutManager(this)
         messageAdapter = MessageAdapter(this)
@@ -35,32 +37,17 @@ class ChatActivity : AppCompatActivity() {
 
 
         btnSend.setOnClickListener {
-            if (txtMessage.text.isNotEmpty()) {
-                val localMessage = LocalMessage(
-                    advisorUser.cellphone,
-                    txtMessage.text.toString(),
-                    Calendar.getInstance().timeInMillis
-                )
-                val message: Message = Message("text", txtMessage.text.toString())
-                messageAdapter.addMessage(localMessage)
-                try {
-                    bambaService.sendMessage(message, advisorUser);
-                } catch (e: Exception) {
-                    println("EXCEPTION: " + e.message)
-                }
-
-                this.resetInput()
+            if (!this.hasInternetConnection()) {
+                this.showToast(getString(R.string.no_internet))
             } else {
-                Toast.makeText(
-                    applicationContext,
-                    "No haz tecleado un mensaje",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                if (txtMessage.text.isNotEmpty()) {
+                   this.sendMessage();
+                } else {
+                    this.showToast(getString(R.string.no_message))
+                }
+                setupPusher()
             }
         }
-
-        setupPusher()
     }
 
     private fun resetInput() {
@@ -79,7 +66,6 @@ class ChatActivity : AppCompatActivity() {
         val channel = pusher.subscribe("user-" + advisorUser.uuid + "-channel")
 
         channel.bind("message-sent") { event ->
-            Log.i("Pusher", "Received event with data: $event")
             val jsonObject = JSONObject(event.data)
 
             val message = LocalMessage(
@@ -94,6 +80,44 @@ class ChatActivity : AppCompatActivity() {
             }
 
         }
+    }
+
+    private fun hasInternetConnection(): Boolean {
+        val connectivityManager = getSystemService(ConnectivityManager::class.java)
+        val currentNetwork = connectivityManager.activeNetwork
+        val caps = connectivityManager.getNetworkCapabilities(currentNetwork)
+
+        if (caps === null) {
+            return false
+        }
+
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+    }
+
+    private fun sendMessage()  {
+        val localMessage = LocalMessage(
+            advisorUser.cellphone,
+            txtMessage.text.toString(),
+            Calendar.getInstance().timeInMillis
+        )
+        val message: Message = Message("text", txtMessage.text.toString())
+        try {
+            bambaService.sendMessage(message, advisorUser);
+            messageAdapter.addMessage(localMessage)
+        } catch (e: Exception) {
+            println("EXCEPTION: " + e.message)
+        }
+
+        this.resetInput()
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(
+            applicationContext,
+            message,
+            Toast.LENGTH_SHORT
+        )
+            .show()
     }
 
     override fun onDestroy() {
