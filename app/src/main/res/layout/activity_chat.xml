@@ -46,7 +46,6 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
             android:background="@drawable/bamba_chat_input_background"
             android:maxLines="6" />
 
@@ -63,7 +62,7 @@
             android:gravity="center"
             android:text="@string/send_button_text"
             android:textAppearance="@style/bamba_send_button_text"
-            android:textSize="14dp" />
+            android:textSize="14sp" />
 
     </LinearLayout>
 
