@@ -24,4 +24,12 @@
             #FFF
         </item>
     </style>
+    <style name="bamba_chat_text_input">
+        <item name="android:textSize">
+            12sp
+        </item>
+        <item name="android:bor">
+            12sp
+        </item>
+    </style>
 </resources>
