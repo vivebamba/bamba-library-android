@@ -47,6 +47,8 @@ class ChatActivity : AppCompatActivity() {
                 }
             }
         }
+
+        supportActionBar?.hide()
     }
 
     private fun resetInput() {
