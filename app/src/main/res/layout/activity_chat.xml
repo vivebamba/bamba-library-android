@@ -47,7 +47,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_weight="1"
-            android:textColor="@color/primary"
+            android:textColor="@color/blue_700"
             android:paddingLeft="8dp"
             android:background="@drawable/bamba_chat_input_background"
             android:maxLines="6" />

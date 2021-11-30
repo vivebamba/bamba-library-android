@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="blue_700">#0C256E</color>
     <color name="primary">#123291</color>
     <color name="secondary">#ff7575</color>
     <color name="purple_200">#FFBB86FC</color>
